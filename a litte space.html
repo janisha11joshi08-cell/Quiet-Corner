@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiet Corner</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5eee6;
+      color: #302c29;
+    }
+
+    nav {
+      background: #405548;
+      padding: 15px;
+      text-align: center;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 80px 20px;
+      background: #ded4c7;
+    }
+
+    .hero h1 {
+      font-family: Georgia, serif;
+      font-size: 55px;
+      margin: 10px;
+    }
+
+    .hero span {
+      color: #6f6255;
+      font-style: italic;
+    }
+
+    .hero p {
+      max-width: 600px;
+      margin: 20px auto;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .button {
+      display: inline-block;
+      background: #405548;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .section {
+      width: 80%;
+      max-width: 850px;
+      margin: 60px auto;
+    }
+
+    .section h2 {
+      font-family: Georgia, serif;
+      font-size: 35px;
+    }
+
+    .moods {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .mood {
+      padding: 10px 18px;
+      border: 1px solid #8b8177;
+      border-radius: 20px;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .mood.selected {
+      background: #405548;
+      color: white;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      margin-top: 25px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 180px;
+      box-sizing: border-box;
+      padding: 15px;
+      margin-top: 10px;
+      border: 1px solid #c8bdb1;
+      border-radius: 8px;
+      font-size: 16px;
+      resize: vertical;
+    }
+
+    .small {
+      color: #756b62;
+      font-size: 13px;
+    }
+
+    #savedThought {
+      min-height: 80px;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    .reflection {
+      background: #d9e0d9;
+      padding: 40px;
+      border-radius: 12px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #756b62;
+    }
+
+    @media (max-width: 600px) {
+      .hero h1 {
+        font-size: 42px;
+      }
+
+      .section {
+        width: 90%;
+      }
+
+      nav a {
+        margin: 0 7px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="#home">Quiet Corner</a>
+    <a href="#write">Write</a>
+    <a href="#reflection">Reflection</a>
+  </nav>
+
+  <div class="hero" id="home">
+    <p>A QUIET CORNER OF THE INTERNET</p>
+    <h1>You don't need<br><span>the right words.</span></h1>
+    <p>
+      Sometimes a thought just needs somewhere to exist.
+      Choose a feeling, write what is on your mind, and give yourself a quiet space.
+    </p>
+    <a class="button" href="#write">Begin writing</a>
+  </div>
+
+  <div class="section" id="write">
+    <h2>How are you feeling?</h2>
+    <p>You don't have to explain it. Just choose what feels closest.</p>
+
+    <div class="moods">
+      <button class="mood" onclick="chooseMood(this)">Calm</button>
+      <button class="mood" onclick="chooseMood(this)">Heavy</button>
+      <button class="mood" onclick="chooseMood(this)">Confused</button>
+      <button class="mood" onclick="chooseMood(this)">Happy</button>
+      <button class="mood" onclick="chooseMood(this)">Restless</button>
+      <button class="mood" onclick="chooseMood(this)">Grateful</button>
+    </div>
+
+    <div class="card">
+      <label for="thought"><b>What's taking up space in your mind?</b></label>
+
+      <textarea id="thought" maxlength="500"
+        oninput="countWords()"
+        placeholder="Write whatever comes to mind..."></textarea>
+
+      <p class="small">
+        <span id="counter">0</span> / 500 characters
+        · <span id="chosenMood">No mood selected</span>
+      </p>
+
+      <button class="button" onclick="saveThought()">Keep this thought</button>
+      <p id="message" class="small"></p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Your saved corner</h2>
+
+    <div class="card">
+      <p id="savedThought" class="small">
+        Nothing here yet. Your corner is waiting.
+      </p>
+    </div>
+  </div>
+
+  <div class="section" id="reflection">
+    <div class="reflection">
+      <p>A LITTLE REFLECTION</p>
+      <h2 id="reflectionText">Maybe not everything needs an answer today.</h2>
+      <button class="button" onclick="newReflection()">Give me another thought</button>
+    </div>
+  </div>
+
+  <footer>
+    Quiet Corner · made for pauses and unfinished thoughts.
+  </footer>
+
+  <script>
+    let selectedMood = "";
+
+    const reflections = [
+      "Maybe not everything needs an answer today.",
+      "You are allowed to pause before deciding what comes next.",
+      "A small thought can still deserve your attention.",
+      "You don't have to make sense of everything at once.",
+      "Sometimes noticing how you feel is enough for today."
+    ];
+
+    function chooseMood(button) {
+      let buttons = document.querySelectorAll(".mood");
+
+      buttons.forEach(function(item) {
+        item.classList.remove("selected");
+      });
+
+      button.classList.add("selected");
+      selectedMood = button.innerText;
+
+      document.getElementById("chosenMood").innerText =
+        "Mood: " + selectedMood;
+    }
+
+    function countWords() {
+      let thought = document.getElementById("thought").value;
+      document.getElementById("counter").innerText = thought.length;
+    }
+
+    function saveThought() {
+      let thought = document.getElementById("thought").value;
+
+      if (thought.trim() === "") {
+        document.getElementById("message").innerText =
+          "Write something first.";
+        return;
+      }
+
+      document.getElementById("savedThought").innerText =
+        '"' + thought + '"' + "\n\nMood: " +
+        (selectedMood || "Not selected");
+
+      document.getElementById("message").innerText =
+        "Your thought has been kept here.";
+
+      localStorage.setItem("thought", thought);
+      localStorage.setItem("mood", selectedMood || "Not selected");
+    }
+
+    function newReflection() {
+      let randomNumber =
+        Math.floor(Math.random() * reflections.length);
+
+      document.getElementById("reflectionText").innerText =
+        reflections[randomNumber];
+    }
+
+    window.onload = function() {
+      let oldThought = localStorage.getItem("thought");
+      let oldMood = localStorage.getItem("mood");
+
+      if (oldThought) {
+        document.getElementById("savedThought").innerText =
+          '"' + oldThought + '"' + "\n\nMood: " + oldMood;
+      }
+    };
+  </script>
+
+</body>
+</html>
+
+
